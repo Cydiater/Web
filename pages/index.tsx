@@ -1,5 +1,7 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import jinghuiAvatar from '../public/jinghui.jpg';
+import Image from 'next/image';
 
 const Home: NextPage = () => {
 	return (
@@ -8,7 +10,16 @@ const Home: NextPage = () => {
 				<title>Cydiater Site</title>
 				<meta name="description" content="Personal Site of Cydiater" />
 			</Head>
-			<div className="flex flex-col items-center space-y-2 pt-5">
+			<div className="flex flex-col items-center space-y-2 pt-5 px-3">
+
+				<Image
+					src={jinghuiAvatar}
+					alt="my selfish"
+					width={150}
+					height={150}
+					className="rounded-full"
+				></Image>
+
 				<h1 className="text-3xl font-bold text-center text-stone-700">
 					Hi 👋 , I&#39;m Cydiater
 				</h1>
