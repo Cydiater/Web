@@ -18,7 +18,8 @@ const Home: NextPage = () => {
 					width={150}
 					height={150}
 					className="rounded-full"
-				></Image>
+				>
+				</Image>
 
 				<h1 className="text-3xl font-bold text-center text-stone-700">
 					Hi 👋 , I&#39;m Cydiater
