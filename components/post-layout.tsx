@@ -1,8 +1,6 @@
 import type { PostData } from '../lib/posts';
-import Link from 'next/link';
-import { FunctionComponent } from 'react';
 
-export const PostLayout: FunctionComponent<PostData> = (postData) => {
+export default function PostLayout(postData: PostData) {
 	return (
 		<div className="flex flex-col items-center">
 			<div className="flex flex-col max-w-2xl w-full px-3 pt-3">
