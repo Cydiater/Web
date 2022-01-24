@@ -1,14 +1,17 @@
 import { formatISO } from 'date-fns';
+import { FunctionComponent } from 'react';
 
-export default function PostPreview( {
-	title,
-	postDate,
-	intro,
-} : {
+type PostPreviewProps = {
 	title: string,
 	postDate: Date,
 	intro: string,
-}) {
+};
+
+export const PostPreview: FunctionComponent<PostPreviewProps> = ({
+	title,
+	postDate,
+	intro,
+}) => {
 	return (
 		<div className="flex flex-row space-x-6 w-full px-2">
 			<div className="text-neutral-400 text-base whitespace-nowrap">
