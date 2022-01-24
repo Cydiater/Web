@@ -14,18 +14,23 @@ const Home: NextPage = () => {
 
 			<div className="flex flex-col items-center space-y-2 pt-5 px-3">
 
-				<Image
-					src={jinghuiAvatar}
-					alt="my selfish"
-					width={150}
-					height={150}
-					className="rounded-full"
-				>
-				</Image>
+				<div className="flex flex-row space-x-5 items-center w-full max-w-xs">
+					<Image
+						src={jinghuiAvatar}
+						alt="my selfish"
+						width={100}
+						height={100}
+						className="rounded-full"
+					>
+					</Image>
 
-				<h1 className="text-3xl font-bold text-center text-stone-700">
-					Hi 👋 , I&#39;m Cydiater
-				</h1>
+					<div className="grow"/>
+
+					<h1 className="text-3xl font-bold text-center text-stone-700">
+						Hi 👋 <br />
+						I&#39;m Cydiater
+					</h1>
+				</div>
 
 				<p className="text-neutral-400 italic max-w-xl">
 					This is a trivial side-project for building a personal blog website to help me kill the spare holiday time. 
