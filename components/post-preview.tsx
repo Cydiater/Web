@@ -10,8 +10,8 @@ export default function PostPreview( {
 	intro: string,
 }) {
 	return (
-		<div className="flex flex-row space-x-6 w-full">
-			<div className="text-neutral-400 text-base">
+		<div className="flex flex-row space-x-6 w-full px-2">
+			<div className="text-neutral-400 text-base whitespace-nowrap">
 				{formatISO(postDate, {
 					representation: "date",
 				})}

@@ -1,7 +1,6 @@
 import type { PostData } from '../lib/posts';
-import { FunctionComponent } from 'react';
 
-export const PostLayout: FunctionComponent<PostData> = (postData) => {
+export default function PostLayout(postData: PostData) {
 	return (
 		<div>
 			<h1> {postData.title} </h1>
