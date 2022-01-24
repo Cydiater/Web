@@ -17,7 +17,7 @@ export default function PostPreview( {
 				})}
 			</div>
 			<div className="flex flex-col space-y-1">
-				<div className="text-xl font-bold">
+				<div className="text-xl font-bold font-serif">
 					{title}
 				</div>
 				<div className="text-neutral-500 text-lg">
