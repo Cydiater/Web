@@ -2,7 +2,7 @@ import type { NextPage, GetStaticProps } from 'next';
 import Head from 'next/head';
 import jinghuiAvatar from '../public/jinghui.jpg';
 import Image from 'next/image';
-import PostPreview from '../components/post-preview';
+import { PostPreview } from '../components/post-preview';
 import { getSortedPostData } from '../lib/posts';
 import type { PostData } from '../lib/posts';
 
