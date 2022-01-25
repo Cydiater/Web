@@ -36,8 +36,8 @@ const Home: NextPage<HomeProps> = ({ allPostData }) => {
 					<Image
 						src={jinghuiAvatar}
 						alt="my selfish"
-						width={100}
-						height={100}
+						width={96}
+						height={96}
 						className="rounded-full"
 					>
 					</Image>
@@ -49,7 +49,7 @@ const Home: NextPage<HomeProps> = ({ allPostData }) => {
 
 				</div>
 
-				<div className="flex flex-row text-2xl text-stone-700 justify-between self-stretch">
+				<div className="flex flex-row text-3xl text-stone-500 justify-between self-stretch">
 					<Link href="https://twitter.com/Cydiater" passHref>
 						<a><FaTwitter /></a>
 					</Link>
