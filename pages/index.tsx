@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { PostPreview } from '../components/post-preview';
 import { getSortedPostData } from '../lib/posts';
 import type { PostData } from '../lib/posts';
-import { FaTwitter, FaGithub, FaAt } from 'react-icons/fa';
+import { FaTwitter, FaGithub, FaAt, FaTelegram } from 'react-icons/fa';
 import Link from 'next/link';
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -31,7 +31,8 @@ const Home: NextPage<HomeProps> = ({ allPostData }) => {
 
 			<div className="flex flex-col items-center space-y-2 pt-5 px-5 w-full max-w-lg">
 
-				<div className="flex flex-row space-x-5 items-center w-full justify-between">
+				<div className="flex flex-row space-x-5 items-center w-full max-w-md">
+
 					<Image
 						src={jinghuiAvatar}
 						alt="my selfish"
@@ -41,22 +42,26 @@ const Home: NextPage<HomeProps> = ({ allPostData }) => {
 					>
 					</Image>
 
-					<h1 className="text-3xl font-bold text-center text-stone-700">
+					<h1 className="text-3xl font-bold text-center text-stone-700 grow">
 						Hi 👋 <br />
 						I&#39;m Cydiater
 					</h1>
 
-					<div className="flex flex-col text-2xl text-stone-700 justify-between self-stretch">
-						<Link href="https://twitter.com/Cydiater" passHref>
-							<a><FaTwitter /></a>
-						</Link>
-						<Link href="https://github.com/Cydiater" passHref>
-							<a><FaGithub /></a>
-						</Link>
-						<Link href="mailto:cydiater@gmail.com" passHref>
-							<a><FaAt /></a>
-						</Link>
-					</div>
+				</div>
+
+				<div className="flex flex-row text-2xl text-stone-700 justify-between self-stretch">
+					<Link href="https://twitter.com/Cydiater" passHref>
+						<a><FaTwitter /></a>
+					</Link>
+					<Link href="https://github.com/Cydiater" passHref>
+						<a><FaGithub /></a>
+					</Link>
+					<Link href="https://t.me/Cydiater" passHref>
+						<a><FaTelegram /></a>
+					</Link>
+					<Link href="mailto:cydiater@gmail.com" passHref>
+						<a><FaAt /></a>
+					</Link>
 				</div>
 
 			</div>
