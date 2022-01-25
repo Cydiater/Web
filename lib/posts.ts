@@ -48,7 +48,6 @@ export async function getPostData(id: string): Promise<PostData> {
 	return {
 		id,
 		content: contentHtml,
-		postDateString: matterResult.data.postDate,
 		...matterResult.data
 	} as PostData;
 }
