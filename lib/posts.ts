@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { remark } from 'remark';
+import html from 'remark-html';
 
 export type PostData = {
 	id: string,
@@ -10,7 +12,46 @@ export type PostData = {
 	postDateString: string,
 };
 
+export type StaticPathParam = {
+	params: {
+		id: string,
+	}
+};
+
 const postsDirectory = path.join(process.cwd(), 'posts');
+
+export function getAllPostIds(): StaticPathParam[] {
+	const fileNames = fs.readdirSync(postsDirectory);
+	return fileNames.map(fileName => {
+		return {
+			params: {
+				id: fileName.replace(/\.md$/, '')
+			}
+		} as StaticPathParam;
+	});
+}
+
+export async function getPostData(id: string): Promise<PostData> {
+	const fullPath = path.join(postsDirectory, `${id}.md`)
+	const fileContents = fs.readFileSync(fullPath, 'utf8')
+
+	// Use gray-matter to parse the post metadata section
+	const matterResult = matter(fileContents)
+
+	// Use remark to convert markdown into HTML string
+	const processedContent = await remark()
+	.use(html)
+	.process(matterResult.content)
+	const contentHtml = processedContent.toString()
+
+	// Combine the data with the id
+	return {
+		id,
+		content: contentHtml,
+		postDateString: matterResult.data.postDate,
+		...matterResult.data
+	} as PostData;
+}
 
 export function getSortedPostData(): PostData[] {
 	// Get file names under /posts
