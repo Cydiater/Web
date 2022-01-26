@@ -16,8 +16,8 @@ export const PostPreview: FunctionComponent<PostPreviewProps> = ({
 	intro,
 }) => {
 	return (
-		<div className="flex flex-row space-x-6 w-full px-2">
-			<div className="text-neutral-400 text-base whitespace-nowrap">
+		<div className="flex sm:flex-row flex-col w-full px-2">
+			<div className="text-neutral-400 text-base whitespace-nowrap mr-5">
 				{formatISO(postDate, {
 					representation: "date",
 				})}
