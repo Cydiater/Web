@@ -34,8 +34,13 @@ Master 上不仅存储了整个文件系统的 File Namespace，还存储了 Fil
 
 这里引出的另一个问题就是，这三个 Replication 本身作为一个分布式的系统，需要就谁是 Primary 这个事情达成一致，即我们不希望有两个 Replication 同时认为自己是 Primary 来接收客户端的请求。这里是由 Master 来发放 Lease 来保证的，即 Master 通过某种方式来确定出三个 Replication 中某一个是 Primary，然后通知这三个 Replication 其中一个 Replication 在未来的 60 秒之内是 Primary。那么如果不出意外，在未来的一段时间内 Master 可以和 Primary 通过 Heartbeat 保持沟通，那么 Master 就会延长这段时间；如果失去了联系，即发生了 Network Partition，那么 Master 就会等到 Lease 过期后重新指定一个新的 Primary，而老的 Primary 在 Lease 过期后没有获得 Master 的续约，就会认为自己不再是 Primary，从而拒绝客户端的请求。可以看出，GFS 通过接受一定时间的不可用来保证了 Replication 之间就 Primary 的 Consistency。
 
+### R & W
+
 ```mermaid
-graph LR
-    Start --> Stop
+sequenceDiagram
+    Client->>Master: Read Chunk Index 33 at `/foo/bar`
+    Master->>Client: Chunk Handle is ab03d, Primary is Repl.1, Others Repl.2, Repl.3
+    Client->>Repl.2: Read Chunk Handle ab03d
+    Repl.2->>Client: Payload Data
 ```
 
