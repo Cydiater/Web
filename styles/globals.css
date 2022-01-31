@@ -19,9 +19,9 @@ a {
 	box-sizing: border-box;
 }
 
-svg {
+.scaleSvg svg {
 	width: 100%;
-	height: fit-content;
+	height: auto;
 }
 
 tspan {
