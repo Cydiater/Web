@@ -3,12 +3,15 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+// work around here, see https://github.com/remcohaszing/remark-mermaidjs/issues/4
+const { remarkMermaid } = require('remark-mermaidjs');
 
 export type PostData = {
 	id: string,
 	title: string,
 	intro: string,
 	content: string,
+	imagePath: string,
 	postDateString: string,
 };
 
@@ -22,7 +25,9 @@ const postsDirectory = path.join(process.cwd(), 'posts');
 
 export function getAllPostIds(): StaticPathParam[] {
 	const fileNames = fs.readdirSync(postsDirectory);
-	return fileNames.map(fileName => {
+	return fileNames
+	.filter(fileName => fileName.match(/\.md$/))
+	.map(fileName => {
 		return {
 			params: {
 				id: fileName.replace(/\.md$/, '')
@@ -39,10 +44,12 @@ export async function getPostData(id: string): Promise<PostData> {
 	const matterResult = matter(fileContents)
 
 	// Use remark to convert markdown into HTML string
-	const processedContent = await remark()
-	.use(html)
-	.process(matterResult.content)
-	const contentHtml = processedContent.toString()
+	const withMermaid = await remark()
+	.use(remarkMermaid)
+	.use(html, { sanitize: false })
+	.process(matterResult.content);
+
+	const contentHtml = withMermaid.toString()
 
 	// Combine the data with the id
 	return {
@@ -56,7 +63,9 @@ export async function getPostData(id: string): Promise<PostData> {
 export function getSortedPostData(): PostData[] {
 	// Get file names under /posts
 	const fileNames = fs.readdirSync(postsDirectory)
-	const allPostData: PostData[] = fileNames.map(fileName => {
+	const allPostData: PostData[] = fileNames
+	.filter(fileName => fileName.match(/\.md$/))
+	.map(fileName => {
 		// Remove ".md" from file name to get id
 		const id = fileName.replace(/\.md$/, '');
 
@@ -74,6 +83,7 @@ export function getSortedPostData(): PostData[] {
 			intro: matterResult.data.intro,
 			content: matterResult.content,
 			postDateString: matterResult.data.postDate,
+			imagePath: matterResult.data.imagePath,
 		} as PostData;
 	});
 	// Sort posts by date

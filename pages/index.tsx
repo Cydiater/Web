@@ -66,13 +66,14 @@ const Home: NextPage<HomeProps> = ({ allPostData }) => {
 
 			</div>
 
-			<div className="flex flex-col items-left space-y-3 pt-5 w-full max-w-2xl">
+			<div className="flex flex-col items-left space-y-3 pt-5 w-full max-w-3xl">
 				{allPostData.map((postData: PostData) => (<PostPreview
 					key={postData.id}
 					id={postData.id}
 					title={postData.title}
 					postDate={new Date(postData.postDateString)}
 					intro={postData.intro}
+					imagePath={postData.imagePath}
 				/>))}
 			</div>
 
