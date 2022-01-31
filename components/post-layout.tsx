@@ -22,7 +22,7 @@ export const PostLayout: FunctionComponent<PostData> = (postData) => {
 					{postData.intro}
 				</div>
 				<div 
-					className="prose leading-normal max-w-3xl"
+					className="prose leading-normal max-w-3xl scaleSvg"
 					dangerouslySetInnerHTML={{ __html: postData.content }} 
 				/>
 			</div>
