@@ -1,6 +1,5 @@
 import type { PostData } from '../lib/posts';
 import Link from 'next/link';
-import Script from 'next/script';
 import { FunctionComponent } from 'react';
 
 export const PostLayout: FunctionComponent<PostData> = (postData) => {
@@ -26,16 +25,6 @@ export const PostLayout: FunctionComponent<PostData> = (postData) => {
 					className="prose leading-normal max-w-3xl"
 					dangerouslySetInnerHTML={{ __html: postData.content }} 
 				/>
-				<Script id='scale-svg'>
-					{`
-						let svgs = document.querySelectorAll('svg'); 
-						svgs.forEach(svg => {
-							svg.style.maxWidth = '100%'; 
-							svg.style.margin = 'auto';
-							svg.style.height = 'fit-content';
-						});
-					`}
-				</Script>
 			</div>
 		</div>
 	)
