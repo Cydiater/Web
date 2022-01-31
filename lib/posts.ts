@@ -3,8 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
-// work around here, see https://github.com/remcohaszing/remark-mermaidjs/issues/4
-const { remarkMermaid } = require('remark-mermaidjs');
+import { remarkMermaid } from 'remark-mermaidjs';
 
 export type PostData = {
 	id: string,
@@ -22,6 +21,9 @@ export type StaticPathParam = {
 };
 
 const postsDirectory = path.join(process.cwd(), 'posts');
+const parseHtml = remark()
+.use(remarkMermaid as any)
+.use(html, { sanitize: false });
 
 export function getAllPostIds(): StaticPathParam[] {
 	const fileNames = fs.readdirSync(postsDirectory);
@@ -39,16 +41,8 @@ export function getAllPostIds(): StaticPathParam[] {
 export async function getPostData(id: string): Promise<PostData> {
 	const fullPath = path.join(postsDirectory, `${id}.md`)
 	const fileContents = fs.readFileSync(fullPath, 'utf8')
-
-	// Use gray-matter to parse the post metadata section
 	const matterResult = matter(fileContents)
-
-	// Use remark to convert markdown into HTML string
-	const withMermaid = await remark()
-	.use(remarkMermaid)
-	.use(html, { sanitize: false })
-	.process(matterResult.content);
-
+	const withMermaid = await parseHtml.process(matterResult.content);
 	const contentHtml = withMermaid.toString()
 
 	// Combine the data with the id
