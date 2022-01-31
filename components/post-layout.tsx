@@ -27,7 +27,14 @@ export const PostLayout: FunctionComponent<PostData> = (postData) => {
 					dangerouslySetInnerHTML={{ __html: postData.content }} 
 				/>
 				<Script id='scale-svg'>
-					{`let svg = document.querySelector('svg'); svg.style.maxWidth = '100%'; svg.style.margin = 'auto';`}
+					{`
+						let svgs = document.querySelectorAll('svg'); 
+						svgs.forEach(svg => {
+							svg.style.maxWidth = '100%'; 
+							svg.style.margin = 'auto';
+							svg.style.height = 'fit-content';
+						});
+					`}
 				</Script>
 			</div>
 		</div>

@@ -44,3 +44,30 @@ sequenceDiagram
     Repl.2->>Client: Payload Data
 ```
 
+读操作相对来说是比较简单的，Client 对文件的读会转换成一个向 Master 请求 Chunk Location 的 RPC，Client 拿到具体的 Chunk Handle 以及 Chunk Location 后向 Chunk Server 请求具体的数据，然后 Chunk Server 返回数据。在这里，Client 可能会缓存从 Master 返回的信息，即 Chunk Index 对应的 Chunk Handle 和 Chunk Location，以防止重复的请求。但是这里带来的问题就是可能某个 Replication 的数据更新并不及时，因此 Client 可能会读到 Stale 的数据，这个是 GFS 无法避免。作为 Client 如果想要保证数据是最新的，就必须将这些缓存擦除。在选择从哪个 Replication 获取数据的时候，Client 会有一个启发式的算法来挑选最优的 Replication，以保证一个比较优秀的吞吐。
+
+```mermaid
+sequenceDiagram
+	Client ->> Master: Write Chunk Index 33 at `/foo/bar`
+	Master ->> Client: Chunk Handle is ab03d, Primary is Repl.1, Others Repl.2, Repl.3
+	par 
+			Client ->> Repl.1: Push Data
+			Repl.1 ->> Client: ACK
+	and 
+			Client ->> Repl.2: Push Data
+			Repl.2 ->> Client: ACK
+	and 
+			Client ->> Repl.3: Push Data
+			Repl.3 ->> Client: ACK
+	end
+	Client ->> Repl.1: Do Write
+	par
+			Repl.1 ->> Repl.2: Do Write
+			Repl.2 ->> Repl.1: ACK
+	and
+			Repl.1 ->> Repl.3: Do Write
+			Repl.3 ->> Repl.1: ACK
+	end
+	Repl.1 ->> Client: Success
+```
+
