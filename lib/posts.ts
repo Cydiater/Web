@@ -3,12 +3,14 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import { remarkMermaid } from 'remark-mermaidjs';
 
 export type PostData = {
 	id: string,
 	title: string,
 	intro: string,
 	content: string,
+	imagePath: string,
 	postDateString: string,
 };
 
@@ -19,10 +21,15 @@ export type StaticPathParam = {
 };
 
 const postsDirectory = path.join(process.cwd(), 'posts');
+const parseHtml = remark()
+.use(remarkMermaid as any)
+.use(html, { sanitize: false });
 
 export function getAllPostIds(): StaticPathParam[] {
 	const fileNames = fs.readdirSync(postsDirectory);
-	return fileNames.map(fileName => {
+	return fileNames
+	.filter(fileName => fileName.match(/\.md$/))
+	.map(fileName => {
 		return {
 			params: {
 				id: fileName.replace(/\.md$/, '')
@@ -34,15 +41,9 @@ export function getAllPostIds(): StaticPathParam[] {
 export async function getPostData(id: string): Promise<PostData> {
 	const fullPath = path.join(postsDirectory, `${id}.md`)
 	const fileContents = fs.readFileSync(fullPath, 'utf8')
-
-	// Use gray-matter to parse the post metadata section
 	const matterResult = matter(fileContents)
-
-	// Use remark to convert markdown into HTML string
-	const processedContent = await remark()
-	.use(html)
-	.process(matterResult.content)
-	const contentHtml = processedContent.toString()
+	const withMermaid = await parseHtml.process(matterResult.content);
+	const contentHtml = withMermaid.toString()
 
 	// Combine the data with the id
 	return {
@@ -56,7 +57,9 @@ export async function getPostData(id: string): Promise<PostData> {
 export function getSortedPostData(): PostData[] {
 	// Get file names under /posts
 	const fileNames = fs.readdirSync(postsDirectory)
-	const allPostData: PostData[] = fileNames.map(fileName => {
+	const allPostData: PostData[] = fileNames
+	.filter(fileName => fileName.match(/\.md$/))
+	.map(fileName => {
 		// Remove ".md" from file name to get id
 		const id = fileName.replace(/\.md$/, '');
 
@@ -74,6 +77,7 @@ export function getSortedPostData(): PostData[] {
 			intro: matterResult.data.intro,
 			content: matterResult.content,
 			postDateString: matterResult.data.postDate,
+			imagePath: matterResult.data.imagePath,
 		} as PostData;
 	});
 	// Sort posts by date

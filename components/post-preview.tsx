@@ -1,12 +1,14 @@
 import { formatISO } from 'date-fns';
 import { FunctionComponent } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type PostPreviewProps = {
 	id: string,
 	title: string,
 	postDate: Date,
 	intro: string,
+	imagePath: string,
 };
 
 export const PostPreview: FunctionComponent<PostPreviewProps> = ({
@@ -14,10 +16,11 @@ export const PostPreview: FunctionComponent<PostPreviewProps> = ({
 	title,
 	postDate,
 	intro,
+	imagePath,
 }) => {
 	return (
-		<div className="flex flex-row space-x-6 w-full px-2">
-			<div className="text-neutral-400 text-base whitespace-nowrap">
+		<div className="flex sm:flex-row flex-col w-full px-2">
+			<div className="text-neutral-400 text-base whitespace-nowrap mr-5">
 				{formatISO(postDate, {
 					representation: "date",
 				})}
@@ -28,7 +31,15 @@ export const PostPreview: FunctionComponent<PostPreviewProps> = ({
 						<a>{title}</a>
 					</button>
 				</Link>
-				<div className="text-neutral-500 text-lg">
+				<div className="w-full h-60 relative">
+					<Image 
+						src={imagePath}
+						layout="fill"
+						objectFit="contain"
+						alt="main image of the post"
+					/>
+				</div>
+				<div className="text-neutral-500 text-md">
 					{intro}
 				</div>
 			</div>
