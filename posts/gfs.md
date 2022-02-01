@@ -71,3 +71,26 @@ sequenceDiagram
 	Repl.1 ->> Client: Success
 ```
 
+写过程相比起来就比较复杂了，因为需要涉及到保证数据一致性的问题。首先 Client 向 Master 请求 Chunk Location，和上面一样，这个结果也是缓存到 Client 本地以减少和 Master 的交互的。然后 Client 会把待写入的数据先发送给所有的 Replication，在 Chunk Server 处这部分数据会被放到一个 LRU 的 Buffer 当中。当所有的 Replication 都接收到了数据之后，Client 会向 Primary 发送写的命令，这个时候 Primary 可能会接收到很多并发的写，因此 Primary 需要确定一个唯一的顺序，然后再发送给各个 Replication 执行。当所有的 Replication 都正确的执行了之后，Primary 再向 Client 报告写成功。
+
+这里面可能存在的一个问题是，当 Primary 让其余的 Replication 执行写的时候，这些 Replication 可能会因为种种原因无法执行成功，这个时候 Primary 需要向 Client 报告失败。但是这个时候很可能已经有一些 Replication 写成功了，但是我们又不方便再发送一个撤销的命令，因此 GFS 的做法就是接受这种 Inconsistency，当出现这种情况时客户端就需要接受这个时候数据在 Replication 之间是 Inconsistency 的。
+
+### Atomic Record Append
+
+GFS 选择支持的一个比较奇妙的功能叫做 Atomic Record Append。我们知道对于一个 Client 来说，想要写一个文件就必须提供这个文件的路径和 Offset，但是 Atomic Record Append 可以不提供 Offset，只是把一段数据 Append 到这个文件的末尾。GFS 保证当客户端调用这个功能时，相关的数据会被添加到末尾至少一次：
+
+> A record append causes data (the “record”) to be appended atomically at least once even in the presence of concurrent mutations, but at an offset of GFS’s choosing.
+
+GFS 主要依赖这个操作来支持多个客户端的并发操作，主要的应用场景应该是将多个数据流产生的结果合并到一个文件当中。Record Append 主要的路径和上面提到的 Write 其实是一致的，这里比较奇怪的「至少一次」，主要是因为在最后一步 Do Write 的过程中，可能会有一部分 Replication 无法成功执行，但是这另外的一些 Replication 上已经被执行了，因此 GFS 只能选择重新将数据 Append 一遍，这就造成了相同的数据在 Primary 上添加了两遍。
+
+这样的实现看起来问题很多，但是对于大部分不接受数据重复的场景来说，我们可以简单的增加一个 Unique ID 来区分重复的数据。这个功能实际上是实现在了 GFS 当中，客户端的可以通过简单的配置来实现过滤的功能。其实更宽泛的来讲，这涉及到计算机科学中幂等的概念，即 Idempotent。即对于一个系统来说，重复执行一个操作对于这个系统状态的改变等价于只执行一次，如果我们 GFS 所对接的场景是幂等的，我们就完全没有必要实现重复数据的过滤。GFS 的使用者在其基础之上设计应用时也要考虑其中，尽可能的保证其系统是幂等的，以减少不必要的 overhead。
+
+## Discussion
+
+除了上面提到的这些，GFS 还有 Snapshot 来实现 File Namespace 的 COW，以及 Shadow Master 来减少 Master 的崩溃对整个系统的影响，不过这些并没有很值得讨论的地方，这里就略过了。GFS 整体的设计还是比较简单易于理解的，从 CAP 的角度来看 GFS 相当于是放弃了 Consistency 来保证 A 和 P，Client 可能会读到不 Consistent 的数据，写入的数据在不同的 Replication 甚至不能保证一致。但是在实际的场景中，我们总是可以通过各种 workaround 来解决这种问题，it's not really that important.
+
+## Reference
+
+1. [The Original Paper](https://static.googleusercontent.com/media/research.google.com/en//archive/gfs-sosp2003.pdf)
+
+2. [6.824 Lecture 3: GFS](https://www.youtube.com/watch?v=EpIgvowZr00)
