@@ -50,13 +50,13 @@ sequenceDiagram
 sequenceDiagram
 	Client ->> Master: Write Chunk Index 33 at `/foo/bar`
 	Master ->> Client: Chunk Handle is ab03d, Primary is Repl.1, Others Repl.2, Repl.3
-	par 
+	par
 			Client ->> Repl.1: Push Data
 			Repl.1 ->> Client: ACK
-	and 
+	and
 			Client ->> Repl.2: Push Data
 			Repl.2 ->> Client: ACK
-	and 
+	and
 			Client ->> Repl.3: Push Data
 			Repl.3 ->> Client: ACK
 	end
